@@ -1,37 +1,17 @@
-"""
-CSC148, Winter 2021
-Assignment 2: Automatic Puzzle Solver
-==============================
-This code is provided solely for the personal and private use of
-students taking the CSC148 course at the University of Toronto.
-Copying for purposes other than this use is expressly prohibited.
-All forms of distribution of this code, whether as given or with
-any changes, are expressly prohibited.
 
-Authors: Diane Horton, Jonathan Calver, Sophia Huynh,
-         Maryam Majedi, and Jaisie Sin.
-
-All of the files in this directory are:
-Copyright (c) 2021 Diane Horton, Jonathan Calver, Sophia Huynh,
-                   Maryam Majedi, and Jaisie Sin.
-
-=== Module Description ===
-
-This module contains the expression tree class.
-"""
 
 from __future__ import annotations
 
 from typing import List, Dict, Optional, Tuple, Union
 
-# for the provided tree visualization code
+
 import matplotlib.pyplot as plt
 import networkx as nx
 
-# You may remove this import if you don't use it in your code.
+
 from adts import Queue
 
-# constants for the supported operators
+
 OP_MULTIPLY = '*'
 OP_ADD = '+'
 OPERATORS = [OP_ADD, OP_MULTIPLY]
@@ -123,11 +103,10 @@ class ExprTree:
         elif self._root.isalpha():
             return lookup[self._root]
         elif self._root == OP_ADD:
-            # return sum(subtree.eval(lookup) for subtree in self._subtrees)
-            temp = 0
+            i = 0
             for subtree in self._subtrees:
-                temp += subtree.eval(lookup)
-            return temp
+                i += subtree.eval(lookup)
+            return i
         elif self._root == OP_MULTIPLY:
             i = 1
             for subtree in self._subtrees:
@@ -232,9 +211,8 @@ class ExprTree:
         >>> len(look_up) == 1
         True
         """
-        if isinstance(self._root, int):
-            pass
-        elif self._root.isalpha():
+
+        if isinstance(self._root, str) and self._root.isalpha():
             lookup[self._root] = 0
         for subtree in self._subtrees:
             subtree.populate_lookup(lookup)
@@ -264,8 +242,6 @@ class ExprTree:
             node._subtrees.append(c.copy())
         return node
 
-    # Provided visualization code - see an example usage at the bottom
-    # of this file in the __main__ block.
     def visualize(self, g: nx.Graph, maps: Tuple[Dict[str, str],
                                                  Dict[int, List[str]]],
                   path: str = '', depth: int = 0) -> None:
@@ -302,7 +278,7 @@ def construct_from_list(values: List[List[Union[str, int]]]) -> ExprTree:
     See the handout for a detailed explanation of how <values>
     encodes the expression tree.
 
-    Hint: We have provided you with the helper method ExprTree.append
+    Hint: We have provided you with the helper method ExprTree.construct_child
           You will likely want to use this method.
 
     Precondition:
@@ -323,28 +299,20 @@ def construct_from_list(values: List[List[Union[str, int]]]) -> ExprTree:
     >>> exp_t == ExprTree('+', subtrees)
     True
     """
+
     # Assumed strict precondition
     # base case: <values> is empty
-    expr_tree = None
     if not values:
         return ExprTree(None, [])
     # base case: the length of <values> is 1 and the first value inside the
     # first sublist is int
     if len(values) == 1 and isinstance(values[0][0], int):
         return ExprTree(values[0][0], [])
-    # when first value is an operator
-    elif values[0][0] in OPERATORS:
-        expr_tree = ExprTree(values[0][0], [])
+    # Then first value should be an operator
+    expr_tree = ExprTree(values[0][0], [])
     # Traverse values
     queue = Queue()  # Queue for the sublist
     tree_queue = Queue()  # Queue for the trees to have children
-    # for item in values[1]:  #
-    #     if item in OPERATORS:
-    #         new_tree = ExprTree(item, [])
-    #         expr_tree.append(new_tree)
-    #         tree_queue.enqueue(new_tree)
-    #     else:
-    #         expr_tree.append(ExprTree(item, []))
     tree_queue.enqueue(expr_tree)  # enqueue first operator
     for sublist in values[1:]:
         queue.enqueue(sublist)  # enqueue all sublist
@@ -352,20 +320,14 @@ def construct_from_list(values: List[List[Union[str, int]]]) -> ExprTree:
         sublist = queue.dequeue()  # dequeue from queue
         current_tree = tree_queue.dequeue()  # dequeue from tree_queue
         for item in sublist:
+            new_tree = ExprTree(item, [])
             if item in OPERATORS:
                 # if item is an operator, children should be appended to this
                 # tree later.
-                new_tree = ExprTree(item, [])
-                current_tree.append(new_tree)
                 tree_queue.enqueue(new_tree)
-            else:
-                # If it is not an operator, just append a child
-                current_tree.append(ExprTree(item, []))
+            # If it is not an operator, just append a child
+            current_tree.append(new_tree)
     return expr_tree
-
-# Provided visualization code - see an example usage at the bottom
-# of this file in the __main__ block.
-
 
 def visualize(tree: ExprTree,
               display: bool = False,
@@ -450,25 +412,3 @@ def _draw_graph(g: nx.Graph,
     plt.close()
 
 
-if __name__ == "__main__":
-    import python_ta
-    python_ta.check_all(config={'pyta-reporter': 'ColorReporter',
-                                'allowed-io': [],
-                                'allowed-import-modules': ['doctest',
-                                                           'python_ta',
-                                                           'typing',
-                                                           '__future__',
-                                                           'matplotlib.pyplot',
-                                                           'random',
-                                                           'networkx',
-                                                           'adts'],
-                                'disable': ['E1136'],
-                                'max-attributes': 15}
-                        )
-
-    # # uncomment to generate example of expression tree from the handout
-    # # once you have completed the required parts of the code above
-    ex = [['+'], [3, '*', 'a', '+'], ['a', 'b'], [5, 'c']]
-    exprt = construct_from_list(ex)
-    visualize(exprt)
-    # display=True)  # toggle display or save to file

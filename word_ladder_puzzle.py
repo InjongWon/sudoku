@@ -1,30 +1,8 @@
-"""
-CSC148, Winter 2021
-Assignment 2: Automatic Puzzle Solver
-==============================
-This code is provided solely for the personal and private use of
-students taking the CSC148 course at the University of Toronto.
-Copying for purposes other than this use is expressly prohibited.
-All forms of distribution of this code, whether as given or with
-any changes, are expressly prohibited.
-
-Authors: Diane Horton, Jonathan Calver, Sophia Huynh,
-         Maryam Majedi, and Jaisie Sin.
-
-All of the files in this directory are:
-Copyright (c) 2021 Diane Horton, Jonathan Calver, Sophia Huynh,
-                   Maryam Majedi, and Jaisie Sin.
-
-=== Module Description ===
-
-This module contains the word ladder puzzle class.
-"""
 
 from __future__ import annotations
 from typing import Optional, Set, List
 from puzzle import Puzzle
 from solver import BfsSolver
-# added
 
 
 # difficulty constants
@@ -126,8 +104,6 @@ class WordLadderPuzzle(Puzzle):
         """
         return f'{self.from_word} -> {self.to_word}'
 
-    # Note: A WordLadderPuzzle is solved when from_word is the same as its
-    # to_word
     def is_solved(self) -> bool:
         """
         Return whether this WordLadderPuzzle is solved.
@@ -142,8 +118,6 @@ class WordLadderPuzzle(Puzzle):
 
         return self.from_word == self.to_word
 
-    # legal extensions are valid WordLadderPuzzles that have a from_word that
-    # differs from this WordLadderPuzzle's from_word by exactly one character
     def extensions(self) -> List[WordLadderPuzzle]:
         """
         Return a list of WordLadderPuzzles that are one step
@@ -169,7 +143,7 @@ class WordLadderPuzzle(Puzzle):
             diff = 0
             if len(word) != length:
                 continue
-            for i in range(len(word)):
+            for i in range(length):
                 if self.from_word[i] != word[i]:
                     diff += 1
             if diff == 1:
@@ -179,10 +153,6 @@ class WordLadderPuzzle(Puzzle):
             result.append(WordLadderPuzzle(w, self.to_word, self.word_set))
         return result
 
-    # Note: implementing this requires you to have completed Task 2
-    # Hint: Think about which of BfsSolver and DfsSolver is the right
-    #       solver for the task at hand. (You may add any required
-    #       imports at the top of the file.)
     def get_difficulty(self) -> str:
         """
         Return the "difficulty" of this puzzle.
@@ -203,45 +173,20 @@ class WordLadderPuzzle(Puzzle):
 
         IMPOSSIBLE - a solution does not exist
         """
+
         if self.is_solved():
             return TRIVIAL
-        count = len(BfsSolver().solve(self)) - 1
-        # solved = False
-        # extensions = [self]
-        # count = 0
-        # while not solved:
-        #     curr = []
-        #     for extension in extensions:
-        #         curr.extend(extension.extensions())
-        #     count += 1
-        #     for extension in curr:
-        #         if extension.is_solved():
-        #             solved = True
-        #             break
-        #     extensions = curr
-        if count <= 1:
+        s = BfsSolver()
+        moves = len(s.solve(self)) - 1
+        if moves == -1:
+            return IMPOSSIBLE
+        elif moves <= 1:
             return TRIVIAL
-        elif count == 2:
+        elif moves == 2:
             return EASY
-        elif count < 5:
+        elif moves < 5:
             return MEDIUM
-        elif count >= 5:
+        elif moves >= 5:
             return HARD
         return IMPOSSIBLE
 
-
-if __name__ == '__main__':
-    # any code you want to write to test WordLadderPuzzle.
-    import python_ta
-
-    python_ta.check_all(config={'pyta-reporter': 'ColorReporter',
-                                'allowed-io': ['load_words'],
-                                'allowed-import-modules': ['doctest',
-                                                           'python_ta',
-                                                           'typing',
-                                                           '__future__',
-                                                           'puzzle',
-                                                           'solver'],
-                                'disable': ['E1136'],
-                                'max-attributes': 15}
-                        )
