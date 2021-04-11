@@ -1,38 +1,4 @@
-"""
-CSC148, Winter 2021
-Assignment 2: Automatic Puzzle Solver
-==============================
-This code is provided solely for the personal and private use of
-students taking the CSC148 course at the University of Toronto.
-Copying for purposes other than this use is expressly prohibited.
-All forms of distribution of this code, whether as given or with
-any changes, are expressly prohibited.
 
-Authors: Diane Horton, Jonathan Calver, Sophia Huynh,
-         Maryam Majedi, and Jaisie Sin.
-
-All of the files in this directory are:
-Copyright (c) 2021 Diane Horton, Jonathan Calver, Sophia Huynh,
-                   Maryam Majedi, and Jaisie Sin.
-
-=== Module Description ===
-
-This module contains experiment code that tries using the two solvers
-on a couple of puzzles and prints a summary as a markdown table.
-
-Feel free to add more samples here to explore how your solvers perform
-under various conditions.
-
-This file is NOT graded and is provided purely as a way for you to further
-explore and develop your code if you wish to.
-
-Things you might explore:
-
-- implementing another puzzle type of your choice
-- solving puzzles with different properties
-- exploring how implementing fail_fast changes the time taken to solve puzzles
-- implementing your own custom solver to try to get better performance
-"""
 from timeit import timeit
 from solver import BfsSolver, DfsSolver
 from sudoku_puzzle import SudokuPuzzle
